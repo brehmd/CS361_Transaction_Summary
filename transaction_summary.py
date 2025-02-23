@@ -1,14 +1,24 @@
 import datetime
 import csv
+import zmq
 
 MAX_DESC_LENGTH = 35
 MAX_NUM_DIGITS = 10
 
 
-def receive_info():
+def receive_info(socket):
+    is_start, time, is_end = 0, 0, 0
     
-    # start?, time, end?
-    return 1, 'all', 1 
+    message = socket.recv()
+    
+    command, days = message.decode().split(" ")
+    if command == "summary":
+        is_start = 1
+        time = days
+    elif command == "end":
+        is_end = 1
+        
+    return is_start, time, is_end
 
 
 def parse_csv(path):
@@ -53,6 +63,8 @@ def create_summary(array, time_range):
             string += f"| -${total_expense - total_income}\n"
         elif total_income > total_expense:
             string += f"| +${total_income - total_expense}\n"
+        else:
+            string += f"| $0\n"
         
         string += "-"*(MAX_DESC_LENGTH+MAX_NUM_DIGITS) + "\n"
         
@@ -93,28 +105,38 @@ def create_summary(array, time_range):
             string += f"| -${total_expense - total_income}\n"
         elif total_income > total_expense:
             string += f"| +${total_income - total_expense}\n"
+        else:
+            string += f"| $0\n"
         
         string += "-"*(MAX_DESC_LENGTH+MAX_NUM_DIGITS) + "\n"
 
     return string
 
 
-def send_summary(string):
-    print(string)
+def send_summary(socket, string):
+    socket.send(str.encode(string))
     return
 
 
 if __name__ == "__main__":
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind("tcp://*:5555")
+    
     while (1):
-        is_start, time_range, is_end = receive_info()
+        is_start, time_range, is_end = receive_info(socket)
         if is_start:
             file_path = "./transactions.csv"
             useful_array = parse_csv(file_path)
             summary_string = create_summary(useful_array, time_range)
-            send_summary(summary_string)
+            send_summary(socket, summary_string)
             
         if is_end:
+            socket.send(b"getTransactionSummary ending")
             exit()
+    
+    context.term()
 
 
 # Tracking Date -> Tracking Date
