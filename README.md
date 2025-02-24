@@ -14,7 +14,7 @@
    socket.send(str.encode(req))
    ```
 
-In full your code may look like the following for a request:
+In full, your code may look like the following for a request:
    ```
    days = 30
    req = f"summary {days}"
