@@ -32,4 +32,4 @@ print(summary.decode())
 ```
 
 ## UML Sequence Diagram
-![Microservice A UML](["https://github.com/brehmd/CS361_Transaction_Summary/Microservice A UML.png"](https://github.com/brehmd/CS361_Transaction_Summary/blob/main/Microservice%20A%20UML.png))
+![Microservice A UML](https://github.com/brehmd/CS361_Transaction_Summary/blob/main/Microservice%20A%20UML.png)
