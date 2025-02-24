@@ -7,7 +7,7 @@
    socket = context.socket(zmq.REQ)
    socket.connect("tcp://localhost:5555")
    ```
-3. Use the socket to SEND a request to the microservice in the form of "summary {number of days}" or "end 0". The string must be encoded to be passed through the socket so either use 'b"summary 7"' or use `str.encode(stringVar)` within the send() function
+2. Use the socket to SEND a request to the microservice in the form of "summary {number of days}" or "end 0". The string must be encoded to be passed through the socket so either use 'b"summary 7"' or use `str.encode(stringVar)` within the send() function
    ```
    days = 30
    req = f"summary {days}"
@@ -25,7 +25,11 @@ In full your code may look like the following for a request:
    ```
 
 ## RECEIVE data
-
+From your main program use the built-in socket `.receive()` function to return an encoded string from the microservice. All that is left is to decode it and then likely print the string that was returned.
+```
+summary = socket.recv()
+print(summary.decode())
+```
 
 ## UML Sequence Diagram
 
